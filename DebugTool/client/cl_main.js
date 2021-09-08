@@ -31,8 +31,9 @@ aNotification = function (text) {
 //////////////////////
 
 CarCommand = function (source, args, rawCommand) {
+  var playerPed = PlayerPedId();
   var x, y, z;
-  [x, y, z] = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0, 8.0, 0.5);
+  [x, y, z] = GetOffsetFromEntityInWorldCoords(playerPed, 0.0, 8.0, 0.5);
 
   var veh = args[0];
   if (veh == null) {
@@ -40,6 +41,7 @@ CarCommand = function (source, args, rawCommand) {
   }
   vehiclehash = GetHashKey(veh);
   RequestModel(vehiclehash);
+
 
   const Carloop = setTick(async () => {
     var waiting = 0;
@@ -61,11 +63,11 @@ CarCommand = function (source, args, rawCommand) {
       x,
       y,
       z,
-      GetEntityHeading(GetPlayerPed(-1)),
+      GetEntityHeading(playerPed),
       true,
       true
     );
-    TaskWarpPedIntoVehicle(GetPlayerPed(-1), vehicle, -1);
+    TaskWarpPedIntoVehicle(playerPed, vehicle, -1);
     console.log('Car spawned!');
     clearTick(Carloop);
   });
@@ -76,7 +78,7 @@ CarCommand = function (source, args, rawCommand) {
 //////////////////////
 
 DvCommand = function () {
-  var ped = GetPlayerPed(-1);
+  var ped = PlayerPedId();
   if (DoesEntityExist(ped) && !IsEntityDead(ped)) {
     var pos = GetEntityCoords(ped);
 
@@ -183,7 +185,7 @@ EnableDebug = function () {
 };
 
 GetLocation = function () {
-  if (GetEntityCoords(GetPlayerPed(-1))[2] < 1000) {
+  if (GetEntityCoords(PlayerPedId())[2] < 1000) {
     location = 'Los Santos';
   } else {
     location = 'Blanie Country';
@@ -243,8 +245,8 @@ const debugloop = setTick(async () => {
     }
 
     // Car Info
-    if (IsPedInAnyVehicle(GetPlayerPed(-1), false)) {
-      var currentvehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false);
+    if (IsPedInAnyVehicle(playerPed, false)) {
+      var currentvehicle = GetVehiclePedIsIn(playerPed, false);
       var carModels = GetEntityModel(currentvehicle);
       var car = GetDisplayNameFromVehicleModel(carModels);
       var speed = GetEntitySpeed(currentvehicle) * 3.6;
@@ -271,7 +273,7 @@ const debugloop = setTick(async () => {
     // Interior Info
 
     console.log(0);
-    IntID = GetInteriorFromEntity(GetPlayerPed(-1));
+    IntID = GetInteriorFromEntity(playerPed);
     console.log(1);
 
     if (IntID != 0) {
@@ -279,7 +281,7 @@ const debugloop = setTick(async () => {
       Portals = GetInteriorPortalCount(IntID);
       RoomId = GetInteriorRoomIndexByHash(
         IntID,
-        GetRoomKeyFromEntity(GetPlayerPed(-1))
+        GetRoomKeyFromEntity(playerPed)
       );
       console.log(5);
     }
@@ -294,7 +296,7 @@ const debugloop = setTick(async () => {
     DrawSpecText('~s~Speed:~r~ ' + sp, 0.01, 0.34);
     DrawSpecText('~s~Health:~r~ ' + he, 0.01, 0.36);
 
-    if (IsPedInAnyVehicle(GetPlayerPed(-1), false)) {
+    if (IsPedInAnyVehicle(playerPed, false)) {
       DrawSpecText('~s~Current Speed: ~r~' + Math.floor(speed), 0.01, 0.4);
       DrawSpecText('~s~Top speed: ~r~' + Math.floor(lasttopspeed), 0.01, 0.42);
       DrawSpecText('~s~Current Car: ~r~' + car, 0.01, 0.44);
@@ -331,7 +333,7 @@ const debugloop = setTick(async () => {
 //////////////////////
 
 FixCurrentCar = function () {
-  var playerPed = GetPlayerPed(-1);
+  var playerPed = PlayerPedId();
   if (IsPedInAnyVehicle(playerPed, false)) {
     var vehicle = GetVehiclePedIsIn(playerPed, false);
     SetVehicleEngineHealth(vehicle, 1000);
@@ -348,7 +350,7 @@ FixCurrentCar = function () {
 //////////////////////
 
 CleanCurrentCar = function () {
-  var playerPed = GetPlayerPed(-1);
+  var playerPed = PlayerPedId();
   if (IsPedInAnyVehicle(playerPed, false)) {
     var vehicle = GetVehiclePedIsIn(playerPed, false);
     SetVehicleDirtLevel(vehicle, 0);
